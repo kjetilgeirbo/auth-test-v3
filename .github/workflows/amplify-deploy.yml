@@ -11,6 +11,25 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - name: Check for AWS Credentials
+        id: check-aws-credentials
+        run: |
+          if [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ] || [ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]; then
+            echo "❌ AWS credentials not found in GitHub secrets!"
+            echo ""
+            echo "Please add the following secrets to your repository:"
+            echo "1. Go to: https://github.com/${{ github.repository }}/settings/secrets/actions"
+            echo "2. Add these secrets:"
+            echo "   - AWS_ACCESS_KEY_ID"
+            echo "   - AWS_SECRET_ACCESS_KEY"
+            echo ""
+            echo "You can get these from your AWS IAM user or ask your AWS administrator."
+            echo "For this project, use the github-actions-amplify IAM user credentials."
+            exit 1
+          else
+            echo "✅ AWS credentials found in secrets"
+          fi
+      
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
